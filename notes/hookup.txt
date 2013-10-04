@@ -1,0 +1,32 @@
+
+Given: atmega644
+
+Reqs:
+ - ISP programming header - 4pins shared
+ - blinky LED for success indicator - 1 pin
+ - keep serial pins open for eventual read-to-PC, or write-from-PC - 2 pins
+ - 15/16pin address bus - 16 pins
+ - 8pin data bus        - 8 pins
+ - 3pin control bus (we, re, ce) - 3 pins
+=== 4 shared pins + 30 pins
+Budget: 32 pins available on atmega644 == clear!
+
+Atmega nub on left (pin1/40 on left edge)
+
+PB0-7 p1-8         -> data bus (with ISP shared header pins)
+      PB0 pin 1 is lowest, PB7 in middle is most significant bit
+PA0-7 p40-33       -> address high (PA7 highest bit !!)
+      A8 is atmega PA0 40 to SRAM 25
+      A8 is top left, increasing as it goes right towards middle
+PC7-0 p29-22       -> address low (PC0 highest bit !!)
+      A0 is atmega PC7 29 to SRAM 10
+      A0 in top middle, left of its group, counting up to the right end of chip
+PD7 p21 at end     -> indicator LED
+PD0 / PD1          -> serial, leave unconnected
+PD2 PD3 PD4 16 17 18    -> we, rd, ce
+
+Problem: I/O 7 is mucking around on the eeprom (toggling to show activity or whatever); when
+connected to SCLK/PB7, then during a atmega flash there will be pin contention and it buggers
+up the flash. Bloody annoying.
+---> So moving I/O 7 over to PD5 (previously unused), though this breaks convenience -- can't just
+set PB to byte and call it a day .. have to set PB, and then also set bit7 onto PD5. Sucks.
