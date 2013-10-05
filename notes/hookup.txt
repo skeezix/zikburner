@@ -23,7 +23,7 @@ PC7-0 p29-22       -> address low (PC0 highest bit !!)
       A0 in top middle, left of its group, counting up to the right end of chip
 PD7 p21 at end     -> indicator LED
 PD0 / PD1          -> serial, leave unconnected
-PD2 PD3 PD4 16 17 18    -> we, rd, ce
+PD2 PD3 PD4 16 17 18    -> we, oe, ce
 
 Problem: I/O 7 is mucking around on the eeprom (toggling to show activity or whatever); when
 connected to SCLK/PB7, then during a atmega flash there will be pin contention and it buggers
