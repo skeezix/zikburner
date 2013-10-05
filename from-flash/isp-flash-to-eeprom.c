@@ -74,8 +74,6 @@ int main ( void ) {
   DDRD |= (1<<PD2); // WE
   DDRD |= (1<<PD3); // RD OE
   DDRD |= (1<<PD7); // LED
-  DDRB = 0xFF;      // data bus
-  DDRD |= (1<<PD5); // data bus bit 8
   DDRA = 0xFF;      // address bus high
   DDRC = 0xFF;      // address bus low
   SW_D &= ~(1<<SW); // switch
@@ -98,6 +96,8 @@ int main ( void ) {
   // write stuff
 #ifdef WRITE_MODE
   OE_DISABLE;
+  DDRB = 0xFF;      // data bus
+  DDRD |= (1<<PD5); // data bus bit 8
   _delay_ms ( 2 );
 
   PORTD |= (1<<PD7); // constant LED
@@ -121,6 +121,9 @@ int main ( void ) {
 #ifdef TEST_MODE
   CE_ENABLE;
   WE_HIGH;
+  DDRB = 0x00;      // data bus
+  DDRD &= ~(1<<PD5); // data bus bit 8
+  _delay_ms ( 2 );
 
   PORTD |= (1<<PD7); // constant LED
 
