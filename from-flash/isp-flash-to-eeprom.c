@@ -129,12 +129,14 @@ int main ( void ) {
   unsigned int address;
   char buffer [ 30 ];
 
-  //#define WRITE_MODE 1
+#define WRITE_MODE 1
   //#define READ_MODE 1
 #define TEST_MODE 1
 
   // write stuff
 #ifdef WRITE_MODE
+  logit ( "write mode\n" );
+
   DDRB = 0xFF;      // data bus
   DDRD |= (1<<PD5); // data bus bit 8
   _delay_ms ( 2 );
@@ -144,7 +146,7 @@ int main ( void ) {
   // pulse WE low (then back to high), with OE high (disabled output) -> write
   // address is latched on WE going low, data latched on WE going high
 
-  for ( address = 0; address < 100; address++ ) {
+  for ( address = 0; address < 129; address++ ) {
     WE_HIGH;
     CE_DISABLE;
 
@@ -153,10 +155,17 @@ int main ( void ) {
     //set_data_b ( address ); // test increment
 
     {
-      sprintf ( buffer, "w %X", _data [ address ] );
+      sprintf ( buffer, "a %d w %X ", address, _data [ address ] );
       logit ( buffer );
       sprintf ( buffer, BYTETOBINARYPATTERN, BYTETOBINARY(_data [ address ]) );
       logit ( buffer );
+
+      if ( address % 6 == 0 ) {
+        logit ( "\n" );
+      } else {
+        logit ( "\t" );
+      }
+
     }
     CE_ENABLE;
     WE_LOW;
@@ -165,11 +174,16 @@ int main ( void ) {
     CE_DISABLE;
     _delay_ms ( 2 );
   } // for
+  logit ( "\n" );
+
+  logit ( "write done\n" );
 
 #endif
 
   // test stuff
 #ifdef TEST_MODE
+  logit ( "test mode\n" );
+
   DDRB = 0x00;         // data bus
   DDRD &= ~(1<<PD5);   // data bus bit 8
   PORTB = 0x00;        // clear data pins, just to be safe
@@ -181,19 +195,24 @@ int main ( void ) {
   unsigned char good = 1;
   unsigned char b;
 
-  for ( address = 0; address < 100; address++ ) {
+  for ( address = 0; address < _data_len; address++ ) {
     set_address_w ( address );
-    sprintf ( buffer, "a %d", address );
+    sprintf ( buffer, "a %d ", address );
     logit ( buffer );
     OE_ENABLE;
     CE_ENABLE;
     _delay_us ( 1 );
     b = get_data_b();
     {
-      sprintf ( buffer, "r %X", b );
+      sprintf ( buffer, "r %X ", b );
       logit ( buffer );
       sprintf ( buffer, BYTETOBINARYPATTERN, BYTETOBINARY(b) );
       logit ( buffer );
+      if ( address % 6 == 0 ) {
+        logit ( "\n" );
+      } else {
+        logit ( "\t" );
+      }
     }
     if ( b != _data [ address ] ) {
       good = 0;
@@ -203,12 +222,15 @@ int main ( void ) {
     OE_DISABLE;
     _delay_ms ( 10 );
   } // for
+  logit ( "\n" );
 
   if ( ! good ) {
-    logit ( "FAIL" );
+    logit ( "TEST FAIL\n" );
     PORTD &= ~(1<<PD7); // constant LED off
     while(1){}; // spin forever
   }
+
+  logit ( "test OK\n" );
 
 #endif
 
@@ -217,9 +239,11 @@ int main ( void ) {
 
     PORTD &= ~ (1<<PD7);
     _delay_ms ( 100 );
+    //logit ( "1" );
 
     PORTD |= (1<<PD7);
     _delay_ms ( 200 );
+    //logit ( "2" );
 
   } // while forever
 
@@ -244,7 +268,7 @@ void serial_setup ( void ) {
   //UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */
   UCSR0B |= ( 1 << TXEN0 );   /* Enable TX */
 
-  logit ( "BOOTUP." );
+  logit ( "BOOTUP.\n" );
 
   //
   // map stdio to uart
@@ -267,7 +291,7 @@ void logit ( char *foo ) {
     p++;
   }
 
-  uart_putchar_prewait ( '\n' );
+  //uart_putchar_prewait ( '\n' );
 
   return;
 }
