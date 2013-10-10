@@ -13,7 +13,6 @@
 #include <avr/io.h>
 #include <stdio.h>
 
-#include "uart.h"
 #include "uart_supplemental.h"
 
 // direction
@@ -56,6 +55,12 @@ static inline void set_data_b ( unsigned char b ) {
 
 static inline unsigned char get_data_b ( void ) {
 
+#if 0
+  char s [ 30 ];
+  sprintf ( s, "B %d\n", PINB );
+  logit ( s );
+#endif
+
   if ( PIND & (1<<PD5) ) {
     return (PINB | 128);
   } else {
@@ -65,13 +70,20 @@ static inline unsigned char get_data_b ( void ) {
 }
 
 static inline void set_address_w ( unsigned int w ) {
-  // PORTA high address
-  // PORTC low address
+  // PORTA high address - is only 7 bit
+  // PORTC low address - is full 8 bit
 
   // !!! wtf?!
   // reversed from expected; oh, endian fucked uppedness
-  PORTA = ((unsigned char)w);
-  PORTC = (unsigned char) (w >> ((unsigned int)8));
+  PORTC = ((unsigned char)w);
+  PORTA = (unsigned char) ( w >> ((unsigned int)8) );
+  PORTA &= ~(128);
+
+#if 0
+  char s [ 30 ];
+  sprintf ( s, "A %d C %d\n", PORTA, PORTC );
+  logit ( s );
+#endif
 }
 
 int main ( void ) {
@@ -129,9 +141,38 @@ int main ( void ) {
   unsigned int address;
   char buffer [ 30 ];
 
+  //#define ECHO_MODE 1
 #define WRITE_MODE 1
   //#define READ_MODE 1
 #define TEST_MODE 1
+
+  // rush: test for echo
+#ifdef ECHO_MODE
+  char e;
+
+  logit ( "echo begin\n" );
+  while ( 1 ) {
+
+#if 0
+    e = uart_getchar_block();
+    sprintf ( buffer, "echo: %c\n", e );
+    logit ( buffer );
+#endif
+#if 1
+    if ( uart_is_getchar_avail() ) {
+      logit ( "got something\n" );
+      e = uart_getchar_now();
+      sprintf ( buffer, "echo: %c\n", e );
+      logit ( buffer );
+    }
+#endif
+
+    _delay_ms ( 10 );
+
+  } // while
+#endif
+
+  _data_len = 20;
 
   // write stuff
 #ifdef WRITE_MODE
@@ -146,7 +187,7 @@ int main ( void ) {
   // pulse WE low (then back to high), with OE high (disabled output) -> write
   // address is latched on WE going low, data latched on WE going high
 
-  for ( address = 0; address < 129; address++ ) {
+  for ( address = ((unsigned int)0); address < ((unsigned int)_data_len); address++ ) {
     WE_HIGH;
     CE_DISABLE;
 
@@ -169,10 +210,11 @@ int main ( void ) {
     }
     CE_ENABLE;
     WE_LOW;
-    _delay_us ( 1 );
+    _delay_us ( 200 );
     WE_HIGH;
     CE_DISABLE;
     _delay_ms ( 2 );
+
   } // for
   logit ( "\n" );
 
@@ -195,13 +237,15 @@ int main ( void ) {
   unsigned char good = 1;
   unsigned char b;
 
-  for ( address = 0; address < _data_len; address++ ) {
+  for ( address = ((unsigned int)0); address < ((unsigned int)_data_len); address++ ) {
+    //for ( address = 0; address < _data_len; address++ ) {
     set_address_w ( address );
     sprintf ( buffer, "a %d ", address );
     logit ( buffer );
     OE_ENABLE;
     CE_ENABLE;
-    _delay_us ( 1 );
+    _delay_us ( 70 );
+    //_delay_ms ( 2 );
     b = get_data_b();
     {
       sprintf ( buffer, "r %X ", b );
@@ -267,6 +311,7 @@ void serial_setup ( void ) {
   // supported functions
   //UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */
   UCSR0B |= ( 1 << TXEN0 );   /* Enable TX */
+  UCSR0B |= ( 1 << RXEN0 );   /* Enable TX */
 
   logit ( "BOOTUP.\n" );
 

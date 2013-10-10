@@ -20,13 +20,13 @@ clean:
 	rm -f isp-flash-to-eeprom.map
 	rm -f isp-flash-to-eeprom
 	rm -f *~*
-	rm -f _test_data.c _test_data.o uart.o uart_supplemental.o
+	rm -f _test_data.c _test_data.o uart_supplemental.o
 
 _test_data.c:
 	./data-to-c-hex.sh test_data.bin > _test_data.c
 
-isp-flash-to-eeprom:	isp-flash-to-eeprom.o _test_data.o uart.o uart_supplemental.o
-	avr-gcc -g -mmcu=${ATMEGA} -o isp-flash-to-eeprom.elf isp-flash-to-eeprom.o _test_data.o uart.o uart_supplemental.o
+isp-flash-to-eeprom:	isp-flash-to-eeprom.o _test_data.o uart_supplemental.o
+	avr-gcc -g -mmcu=${ATMEGA} -o isp-flash-to-eeprom.elf isp-flash-to-eeprom.o _test_data.o uart_supplemental.o
 
 	avr-objcopy -j .text -j .data -O ihex isp-flash-to-eeprom.elf isp-flash-to-eeprom.hex
 
