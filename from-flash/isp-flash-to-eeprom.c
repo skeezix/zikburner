@@ -40,7 +40,7 @@
 #define OE_ENABLE PORTD &= ~(1<<PD3)
 
 extern unsigned int _data_len;
-extern unsigned char _data[];
+extern unsigned char _data [ ];
 
 static inline void set_data_b ( unsigned char b ) {
 
@@ -55,12 +55,6 @@ static inline void set_data_b ( unsigned char b ) {
 
 static inline unsigned char get_data_b ( void ) {
 
-#if 0
-  char s [ 30 ];
-  sprintf ( s, "B %d\n", PINB );
-  logit ( s );
-#endif
-
   if ( PIND & (1<<PD5) ) {
     return (PINB | 128);
   } else {
@@ -73,17 +67,10 @@ static inline void set_address_w ( unsigned int w ) {
   // PORTA high address - is only 7 bit
   // PORTC low address - is full 8 bit
 
-  // !!! wtf?!
-  // reversed from expected; oh, endian fucked uppedness
   PORTC = ((unsigned char)w);
   PORTA = (unsigned char) ( w >> ((unsigned int)8) );
   PORTA &= ~(128);
 
-#if 0
-  char s [ 30 ];
-  sprintf ( s, "A %d C %d\n", PORTA, PORTC );
-  logit ( s );
-#endif
 }
 
 int main ( void ) {
@@ -139,6 +126,7 @@ int main ( void ) {
   }
 
   unsigned int address;
+  unsigned char value;
   char buffer [ 30 ];
 
   //#define ECHO_MODE 1
@@ -172,8 +160,6 @@ int main ( void ) {
   } // while
 #endif
 
-  _data_len = 20;
-
   // write stuff
 #ifdef WRITE_MODE
   logit ( "write mode\n" );
@@ -192,13 +178,15 @@ int main ( void ) {
     CE_DISABLE;
 
     set_address_w ( address );
-    set_data_b ( _data [ address ] );
-    //set_data_b ( address ); // test increment
+
+    //value = address;
+    value = _data [ address ];
+    set_data_b ( value );
 
     {
-      sprintf ( buffer, "a %d w %X ", address, _data [ address ] );
+      sprintf ( buffer, "a %d w %X ", address, value );
       logit ( buffer );
-      sprintf ( buffer, BYTETOBINARYPATTERN, BYTETOBINARY(_data [ address ]) );
+      sprintf ( buffer, BYTETOBINARYPATTERN, BYTETOBINARY(value) );
       logit ( buffer );
 
       if ( address % 6 == 0 ) {
@@ -210,10 +198,10 @@ int main ( void ) {
     }
     CE_ENABLE;
     WE_LOW;
-    _delay_us ( 200 );
+    _delay_us ( 100 );
     WE_HIGH;
     CE_DISABLE;
-    _delay_ms ( 2 );
+    _delay_us ( 200 );
 
   } // for
   logit ( "\n" );
@@ -238,14 +226,14 @@ int main ( void ) {
   unsigned char b;
 
   for ( address = ((unsigned int)0); address < ((unsigned int)_data_len); address++ ) {
-    //for ( address = 0; address < _data_len; address++ ) {
     set_address_w ( address );
+
     sprintf ( buffer, "a %d ", address );
     logit ( buffer );
+
     OE_ENABLE;
     CE_ENABLE;
     _delay_us ( 70 );
-    //_delay_ms ( 2 );
     b = get_data_b();
     {
       sprintf ( buffer, "r %X ", b );
@@ -264,7 +252,7 @@ int main ( void ) {
     }
     CE_DISABLE;
     OE_DISABLE;
-    _delay_ms ( 10 );
+    _delay_us ( 100 );
   } // for
   logit ( "\n" );
 

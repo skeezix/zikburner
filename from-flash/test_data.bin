@@ -1,10 +1,2 @@
-#ifndef h_uart_h
-#define h_uart_h
-
-void uart_putchar_prewait (char c);
-void uart_putchar_postwait (char c);
-#if 0
-char uart_getchar(void);
-#endif
-
-#endif
+# xsessions listed below are run inside an Upstart user session.
+#ubuntu
