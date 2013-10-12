@@ -129,7 +129,7 @@ int main ( void ) {
   unsigned char value;
   char buffer [ 30 ];
 
-  //#define ECHO_MODE 1
+#define ECHO_MODE 1
 #define WRITE_MODE 1
   //#define READ_MODE 1
 #define TEST_MODE 1
@@ -148,14 +148,13 @@ int main ( void ) {
 #endif
 #if 1
     if ( uart_is_getchar_avail() ) {
-      logit ( "got something\n" );
       e = uart_getchar_now();
       sprintf ( buffer, "echo: %c\n", e );
       logit ( buffer );
     }
 #endif
 
-    _delay_ms ( 10 );
+    _delay_ms ( 1 );
 
   } // while
 #endif
