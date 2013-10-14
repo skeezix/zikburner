@@ -116,6 +116,8 @@ void serial_loop_forever ( void ) {
           state = ss_help;
         } else if ( strcmp ( buffer, "charecho" ) == 0 ) {
           state = ss_charecho;
+        } else if ( strcmp ( buffer, "format" ) == 0 ) {
+          state = ss_format;
         } else if ( strcmp ( buffer, "buffer" ) == 0 ) {
           state = ss_buffer;
         } else {
@@ -143,6 +145,10 @@ void serial_loop_forever ( void ) {
 
     case ss_ohai:
       uart_putstring ( "+OHAI\n" );
+
+      log_format = 1;
+      char_echo_mode = 1;
+
       state = ss_ready;
       break;
 
@@ -150,13 +156,14 @@ void serial_loop_forever ( void ) {
 
       uart_putstring ( "Enter commands into terminal.\n" );
       uart_putstring ( "\n" );
-      uart_putstring ( "ohai -> return OHAI and back to ready\n" );
+      uart_putstring ( "ohai -> return OHAI; reset to defaults. (use as first command, always)\n" );
       uart_putstring ( "echo -> enter loop, returning received characters.. forever\n" );
       uart_putstring ( "receive N -> store next N chars (after command return) to buffer\n" );
       uart_putstring ( "burn A -> given a received buffer, burn to address A\n" );
       uart_putstring ( "dump A L -> hexdump from address A of length L\n" );
       uart_putstring ( "charecho -> toggle character echo\n" );
       uart_putstring ( "buffer -> dump the currently received buffer\n" );
+      uart_putstring ( "format -> toggle dump formatting; default on. When off, only 1 address/value per line\n" );
       uart_putstring ( "help -> duh\n" );
       uart_putstring ( "\n" );
 
@@ -172,7 +179,17 @@ void serial_loop_forever ( void ) {
       }
 
       state = ss_ready;
+      break;
 
+    case ss_format:
+
+      if ( log_format ) {
+        log_format = 0;
+      } else {
+        log_format = 1;
+      }
+
+      state = ss_ready;
       break;
 
     case ss_echo:

@@ -8,6 +8,8 @@
 #include "serial_server.h"
 #include "logging.h"
 
+unsigned char log_format = 1;
+
 void logit ( char *foo ) {
   uart_putstring ( foo );
   return;
@@ -27,10 +29,16 @@ void logaddress ( unsigned int address, unsigned char value ) {
   logit ( buffer );
 #endif
 
-  if ( address != 0 && address % 6 == 0 ) {
-    logit ( "\n" );
+  if ( log_format ) {
+
+    if ( address != 0 && address % 6 == 0 ) {
+      logit ( "\n" );
+    } else {
+      logit ( "\t" );
+    }
+
   } else {
-    logit ( "\t" );
+    logit ( "\n" );
   }
 
   return;

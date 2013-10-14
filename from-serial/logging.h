@@ -15,4 +15,6 @@
 void logit ( char *foo );
 void logaddress ( unsigned int address, unsigned char value ); // hexdump out a given address/value pair
 
+extern unsigned char log_format;
+
 #endif
