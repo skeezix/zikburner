@@ -62,6 +62,8 @@ unsigned char eeprom_burn_slow ( unsigned int address, unsigned char *p, unsigne
     value = p [ counter ];
     set_data_b ( value );
 
+    logaddress ( address, value );
+
     CE_ENABLE;
     WE_LOW;
     _delay_us ( 100 );
@@ -73,6 +75,7 @@ unsigned char eeprom_burn_slow ( unsigned int address, unsigned char *p, unsigne
     address++;
 
   } // for
+  logit ( "\n" );
 
   return ( 1 );
 }
@@ -122,7 +125,6 @@ unsigned char eeprom_compare ( unsigned int address, unsigned char *p, unsigned 
 
 void eeprom_dump ( unsigned int address, unsigned int len ) {
   unsigned int counter;
-  char buffer [ 30 ];
 
   // test stuff
   DDRB = 0x00;         // data bus
@@ -139,24 +141,12 @@ void eeprom_dump ( unsigned int address, unsigned int len ) {
   for ( counter = ((unsigned int)0); counter < ((unsigned int) len); counter++ ) {
     set_address_w ( address );
 
-    sprintf ( buffer, "a %d ", address );
-    logit ( buffer );
-
     OE_ENABLE;
     CE_ENABLE;
     _delay_us ( 70 );
     b = get_data_b();
-    {
-      sprintf ( buffer, "r %X ", b );
-      logit ( buffer );
-      sprintf ( buffer, BYTETOBINARYPATTERN, BYTETOBINARY(b) );
-      logit ( buffer );
-      if ( address % 6 == 0 ) {
-        logit ( "\n" );
-      } else {
-        logit ( "\t" );
-      }
-    }
+
+    logaddress ( address, b );
 
     CE_DISABLE;
     OE_DISABLE;

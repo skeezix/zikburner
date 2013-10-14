@@ -19,6 +19,9 @@ typedef enum {
   ss_receive,
   ss_burn,
   ss_dump,
+  ss_charecho,
+  ss_buffer,
+  ss_help,
 } serial_state_e;
 
 #endif

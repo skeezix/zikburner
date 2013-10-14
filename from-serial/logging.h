@@ -13,5 +13,6 @@
     (byte & 0x01 ? 1 : 0) 
 
 void logit ( char *foo );
+void logaddress ( unsigned int address, unsigned char value ); // hexdump out a given address/value pair
 
 #endif
