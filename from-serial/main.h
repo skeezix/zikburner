@@ -6,7 +6,13 @@
 #define F_CPU 8000000UL  /* 8 MHz CPU clock */
 //#define F_CPU 20000000UL  /* 20 MHz CPU clock */
 
-#define BAUD 9600
+// rates:
+// 9600 38400 <- good on 8MHz
+// 57600 115200 <- requires higher clock than 8MHz
+#define BAUD 38400 /* 9600 */
+
+
+#define NOP          __asm__("nop\n\t") /* nop - 1 cycle */
 
 
 

@@ -71,6 +71,25 @@ def dump_to_buffer ( address, length ):
     else:
         return None
 
+def burnblock ( address, bits, blocksize ):
+
+    send ( "receive " + str(blocksize) + "\r" )
+    ser.write ( bits )
+    wait_for_ready()
+
+    #send ( "buffer\r" )
+    #wait_for_ready()
+
+    send ( 'burn ' + str ( address ) + "\r" )
+    success = None
+    if wait_for_ready ( "+BURNOK" ):
+        success = True
+    else:
+        success = False
+    wait_for_ready()
+
+    return success
+
 # command line args
 #
 
@@ -122,7 +141,9 @@ elif cmdoptions.mode == 'burn':
 # preamble
 #
 import serial
-ser = serial.Serial ( port = cmdoptions.device, baudrate = 9600, timeout = 2.05, rtscts = True )
+
+# baud was 9600
+ser = serial.Serial ( port = cmdoptions.device, baudrate = 38400, timeout = 2.05, rtscts = True )
 
 if not ser:
     print "Couldn't open serial port", cmdoptions.device
@@ -153,34 +174,63 @@ if cmdoptions.mode == 'dump':
 
 elif cmdoptions.mode == 'burn':
 
-    print ">>> Sending data to burn..."
-    send ( "receive " + str(filesize) + "\r" )
+    hexfile = open ( cmdoptions.file, 'r' )
 
+    '''
     crc32 = 0
     with open ( cmdoptions.file, 'r' ) as hexfile:
         bits = hexfile.read()
         crc32 = zlib.crc32 ( bits, 0 )
-        ser.write ( bits )
+    '''
 
-    wait_for_ready()
+    print ">>> Starting the burn process..."
 
-    print ">>> Display copy of received buffer..."
-    send ( 'buffer\r' )
-    wait_for_ready()
+    starttime = int ( time.time() )
 
-    print ">>> Burn buffer to device..."
-    send ( 'burn 0\r' )
-    if wait_for_ready ( "+BURNOK" ):
-        print "    Burn success"
+    success = None
+    if filesize > 255:
+        # loop across blocks
+
+        counter = 0
+        remainder = filesize
+        address = 0
+
+        while True:
+            print int ( time.time() ) - starttime, "secs\tBurning block", counter, '(address', address, '- remaining', remainder, ')'
+
+            bits = hexfile.read ( min ( 255, remainder ) )
+
+            if bits == "":
+                break # EOF
+
+            success = burnblock ( address = address, bits = bits, blocksize = len ( bits ) )
+
+            if not success:
+                break
+
+            address += min ( 255, remainder )
+            remainder -= len ( bits )
+            counter += 1
+
     else:
+        # single block
+        success = burnblock ( address = 0, bits = bits, blocksize = filesize )
+
+    if not success:
         print "    Burn *** FAILURE ***"
-    wait_for_ready()
+        sys.exit()
+
+    hexfile.close()
 
     print ">>> Pull dump of device for comparison..."
     b = dump_to_buffer ( "0", str(filesize) )
     wait_for_ready()
 
     print ">>> Comparing..."
+
+    with open ( cmdoptions.file, 'r' ) as hexfile:
+        bits = hexfile.read()
+
     counter = 0
     for counter in range ( filesize ):
         if counter == 0:

@@ -120,6 +120,8 @@ void serial_loop_forever ( void ) {
           state = ss_format;
         } else if ( strcmp ( buffer, "buffer" ) == 0 ) {
           state = ss_buffer;
+        } else if ( strcmp ( buffer, "testbuf" ) == 0 ) {
+          state = ss_testbuf;
         } else {
           uart_putstring ( "+BADCOMMAND\n" );
           buffer [ 0 ] = '\0';
@@ -163,6 +165,7 @@ void serial_loop_forever ( void ) {
       uart_putstring ( "dump A L -> hexdump from address A of length L\n" );
       uart_putstring ( "charecho -> toggle character echo\n" );
       uart_putstring ( "buffer -> dump the currently received buffer\n" );
+      uart_putstring ( "testbuf V -> generate a buffer of 0xV\n" );
       uart_putstring ( "format -> toggle dump formatting; default on. When off, only 1 address/value per line\n" );
       uart_putstring ( "help -> duh\n" );
       uart_putstring ( "\n" );
@@ -198,6 +201,40 @@ void serial_loop_forever ( void ) {
       serial_echo_loop_forever();
 
       state = ss_ready; // should never get here...
+      break;
+
+    case ss_testbuf:
+      {
+
+        // verify arguments
+        if ( ! args ) {
+          uart_putstring ( "+BADARGS\n" );
+          state = ss_ready;
+          break;
+        }
+
+        unsigned int b = atoi ( args );
+
+        if ( b > 255 ) {
+          uart_putstring ( "+BADARGS\n" );
+          state = ss_ready;
+          break;
+        }
+
+        data_len = 255;
+
+        unsigned int counter;
+        for ( counter = 0; counter < data_len; counter++ ) {
+          data_buffer [ counter ] = b;
+        }
+
+        char log [ 40 ];
+        sprintf ( log, "# Generated %d bytes of value %X\n", data_len, b );
+        uart_putstring ( log );
+
+      }
+
+      state = ss_ready;
       break;
 
     case ss_buffer:
@@ -288,7 +325,8 @@ void serial_loop_forever ( void ) {
         }
 
         // burn it out
-        eeprom_burn_slow ( address, data_buffer, data_len );
+        //eeprom_burn_slow ( address, data_buffer, data_len );
+        eeprom_burn_fast ( address, data_buffer, data_len );
 
         // verify
         if ( eeprom_compare ( address, data_buffer, data_len ) ) {

@@ -5,7 +5,7 @@ ATMEGA=atmega644
 CC=avr-gcc
 LD=avr-gcc
 #CFLAGS=-g -Os -mmcu=${ATMEGA}
-CFLAGS=-g -Os -mmcu=${ATMEGA}
+CFLAGS=-g -Os -mcall-prologues -mmcu=${ATMEGA}
 
 # avr-gcc -g -Os -mmcu=atmega644 -c demo.c
 # avr-gcc -g -mmcu=atmega8 -o demo.elf demo.o

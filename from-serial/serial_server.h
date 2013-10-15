@@ -23,6 +23,7 @@ typedef enum {
   ss_buffer,
   ss_help,
   ss_format,
+  ss_testbuf,
 } serial_state_e;
 
 #endif
