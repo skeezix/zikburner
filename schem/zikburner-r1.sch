@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="dots" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -2995,6 +2995,9 @@ LETTER landscape</description>
 <part name="R3" library="SparkFun" deviceset="RESISTOR" device="0402-RES" value="1K"/>
 <part name="GND9" library="SparkFun" deviceset="GND" device=""/>
 <part name="FRAME1" library="frames" deviceset="LETTER_L" device=""/>
+<part name="C3" library="SparkFun" deviceset="CAP" device="0402-CAP" value="0.1uF"/>
+<part name="R4" library="SparkFun" deviceset="RESISTOR" device="0402-RES" value="1K"/>
+<part name="U$6" library="SparkFun" deviceset="5V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -3013,6 +3016,16 @@ mcu)</text>
 Copyright 2013 Jeff Mitchell</text>
 <text x="170.18" y="38.1" size="2.54" layer="91">Licensed under BSD 2 clause; open source code
 and design. See included license file in the github.</text>
+<text x="104.14" y="10.16" size="1.27" layer="94">Remember, .1uF mono
+cap across each of Vcc-GND
+and AVCC-AGND</text>
+<text x="104.14" y="10.16" size="1.27" layer="94">Remember, .1uF mono
+cap across each of Vcc-GND
+and AVCC-AGND</text>
+<text x="177.8" y="55.88" size="1.27" layer="94">Pull-up so eeprom is
+deactivated except when
+explicitly flagged; helps
+keep ISP burn clean</text>
 </plain>
 <instances>
 <instance part="U1" gate="A" x="72.39" y="48.26" rot="R180"/>
@@ -3046,6 +3059,9 @@ and design. See included license file in the github.</text>
 <instance part="GND9" gate="1" x="10.16" y="29.21"/>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
 <instance part="FRAME1" gate="G$2" x="147.32" y="0"/>
+<instance part="C3" gate="G$1" x="99.06" y="8.89"/>
+<instance part="R4" gate="G$1" x="166.37" y="55.88" rot="R180"/>
+<instance part="U$6" gate="G$1" x="171.45" y="55.88" rot="R270"/>
 </instances>
 <busses>
 </busses>
@@ -3268,6 +3284,10 @@ and design. See included license file in the github.</text>
 <wire x1="90.17" y1="20.32" x2="93.98" y2="20.32" width="0.1524" layer="91"/>
 <wire x1="93.98" y1="20.32" x2="93.98" y2="17.78" width="0.1524" layer="91"/>
 <junction x="93.98" y="17.78"/>
+</segment>
+<segment>
+<pinref part="R4" gate="G$1" pin="1"/>
+<pinref part="U$6" gate="G$1" pin="5V"/>
 </segment>
 </net>
 <net name="A0" class="0">

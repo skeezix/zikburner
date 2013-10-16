@@ -3863,6 +3863,8 @@ will be further integrated into the Sparkfun Library for other footprints.  It c
 <text x="151.13" y="163.83" size="1.27" layer="91">Always clear
 to send (to
 mcu)</text>
+<rectangle x1="53.34" y1="106.68" x2="228.6" y2="172.72" layer="203"/>
+<text x="115.57" y="104.14" size="1.27" layer="97">Use an FTDI chip here .. or use Sparkfun FTDI Basic with 4 jumpers (CTS, 3V-&gt;5V rail, TX, RX)</text>
 </plain>
 <instances>
 <instance part="U1" gate="A" x="38.1" y="53.34" rot="R180"/>
@@ -4094,11 +4096,6 @@ mcu)</text>
 </net>
 <net name="POWER" class="0">
 <segment>
-<wire x1="111.76" y1="139.7" x2="121.92" y2="139.7" width="0.1524" layer="91"/>
-<label x="111.76" y="139.7" size="1.778" layer="95"/>
-<pinref part="U2" gate="G$1" pin="VCCIO"/>
-</segment>
-<segment>
 <wire x1="215.9" y1="134.62" x2="203.2" y2="134.62" width="0.1524" layer="91"/>
 <label x="205.74" y="134.62" size="1.778" layer="95"/>
 <pinref part="SJ2" gate="G$1" pin="2"/>
@@ -4124,6 +4121,11 @@ mcu)</text>
 <pinref part="C2" gate="G$1" pin="1"/>
 <pinref part="X2" gate="G$1" pin="VBUS"/>
 <pinref part="U$3" gate="G$1" pin="5V"/>
+<wire x1="106.68" y1="139.7" x2="121.92" y2="139.7" width="0.1524" layer="91"/>
+<label x="111.76" y="139.7" size="1.778" layer="95"/>
+<pinref part="U2" gate="G$1" pin="VCCIO"/>
+<wire x1="106.68" y1="139.7" x2="106.68" y2="144.78" width="0.1524" layer="91"/>
+<junction x="106.68" y="144.78"/>
 </segment>
 <segment>
 <wire x1="167.64" y1="152.4" x2="167.64" y2="149.86" width="0.1524" layer="91"/>

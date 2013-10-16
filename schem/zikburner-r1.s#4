@@ -3925,6 +3925,7 @@ to send (to
 mcu)</text>
 <rectangle x1="55.88" y1="100.33" x2="231.14" y2="166.37" layer="203"/>
 <text x="118.11" y="97.79" size="1.27" layer="97">Use an FTDI chip here .. or use Sparkfun FTDI Basic with 4 jumpers (CTS, 3V-&gt;5V rail, TX, RX)</text>
+<text x="149.86" y="30.48" size="2.54" layer="91">Simple eeprom burner for 28Cxxx ICs; ex: Atmel AT28C256</text>
 </plain>
 <instances>
 <instance part="U1" gate="A" x="72.39" y="48.26" rot="R180"/>
