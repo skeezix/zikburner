@@ -214,7 +214,9 @@ elif cmdoptions.mode == 'burn':
 
     else:
         # single block
-        success = burnblock ( address = 0, bits = bits, blocksize = filesize )
+        with open ( cmdoptions.file, 'r' ) as hexfile:
+            bits = hexfile.read()
+            success = burnblock ( address = 0, bits = bits, blocksize = filesize )
 
     if not success:
         print "    Burn *** FAILURE ***"
@@ -231,10 +233,7 @@ elif cmdoptions.mode == 'burn':
     with open ( cmdoptions.file, 'r' ) as hexfile:
         bits = hexfile.read()
 
-    counter = 0
     for counter in range ( filesize ):
-        if counter == 0:
-            continue ## seems like address(0x00) is returning 0xFF in dump, but if you dump again.. is fine. Timing fooked?
         if ord ( bits [ counter ] ) != b [ counter ][ 1 ]:
             print "*** Burn ERROR *** Burn fails comparison at offset", counter
             print "                   Local " + str ( ord ( bits [ counter ] ) ) + " " + hex ( ord ( bits [ counter ] ) )
