@@ -13,6 +13,9 @@ Budget: 32 pins available on atmega644 == clear!
 
 Atmega nub on left (pin1/40 on left edge)
 
+BREADBOARD
+----------
+
 PB0-7 p1-8         -> data bus (with ISP shared header pins)
       PB0 pin 1 is lowest, PB7 in middle is most significant bit
 PA0-7 p40-33       -> address high (PA7 highest bit !!)
@@ -30,3 +33,19 @@ connected to SCLK/PB7, then during a atmega flash there will be pin contention a
 up the flash. Bloody annoying.
 ---> So moving I/O 7 over to PD5 (previously unused), though this breaks convenience -- can't just
 set PB to byte and call it a day .. have to set PB, and then also set bit7 onto PD5. Sucks.
+
+PERFBOARD
+---------
+
+Address lines..
+Did them in order from EEPROM to MCU - this is backwards to breadboard; as long as concistent with reader, who cares...
+ex: A0 (eep 10), A1 (eep 9), A2 (eep 8)..
+to: PC0 (22),    PC1 (23),   PC2 (24)
+
+Orange - address low
+Yellow - address high
+Blue - data
+White - control lines
+Grey - existing from before; ISP
+Red (awg30 and awg22) - postive rail
+Black or light blue (awg30) - ground rail
